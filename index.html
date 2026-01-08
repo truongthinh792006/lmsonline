@@ -5,26 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Hệ Thống Thi Trắc Nghiệm Online</title>
     <style>
-        body, html { 
-            margin: 0; 
-            padding: 0; 
-            height: 100%; 
-            width: 100%; 
-            overflow: hidden; /* Cấm cuộn trang ngoài */
-            background-color: #f0f2f5;
-        }
+        body, html { margin: 0; padding: 0; height: 100%; width: 100%; overflow: hidden; background-color: #f0f2f5; }
         iframe { 
             border: none; 
             position: absolute;
-            top: -25px; /* 👉 Kéo lên 25px để che dòng chữ Google */
+            top: -25px; /* Vẫn giữ thủ thuật che dòng chữ Google */
             left: 0;
             width: 100%; 
-            height: calc(100% + 25px); /* 👉 Bù lại chiều cao bị kéo lên */
+            height: calc(100% + 25px); 
             display: block; 
         }
     </style>
 </head>
 <body>
-    <iframe src="https://script.google.com/macros/s/AKfycbyqYd5wIpeRrmgpX6MkL53Id3MfKF-Mo-QF6u8qFrO0tvYnfFufS16MBEfQPgTu9IEeRg/exec"></iframe>
+    <iframe id="mainFrame" src=""></iframe>
+
+    <script>
+        // 1. Dán Link Google App của bạn vào đây (Link đuôi /exec)
+        var GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyqYd5wIpeRrmgpX6MkL53Id3MfKF-Mo-QF6u8qFrO0tvYnfFufS16MBEfQPgTu9IEeRg/exec";
+
+        // 2. Logic tự động nối đuôi tham số
+        // Lấy tham số từ thanh địa chỉ Vercel (ví dụ: ?page=hocsinh)
+        var params = window.location.search; 
+        
+        // Gán vào iframe
+        document.getElementById("mainFrame").src = GOOGLE_SCRIPT_URL + params;
+    </script>
 </body>
 </html>

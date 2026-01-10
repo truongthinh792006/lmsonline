@@ -2,34 +2,54 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Hệ Thống Thi Trắc Nghiệm Online</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ Thống Thi Trắc Nghiệm</title>
     <style>
-        body, html { margin: 0; padding: 0; height: 100%; width: 100%; overflow: hidden; background-color: #f0f2f5; }
-        iframe { 
-            border: none; 
-            position: absolute;
-            top: -25px; /* Vẫn giữ thủ thuật che dòng chữ Google */
-            left: 0;
-            width: 100%; 
-            height: calc(100% + 25px); 
-            display: block; 
+        /* Làm iframe tràn màn hình, không hiện thanh cuộn thừa */
+        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #f0f2f5; }
+        iframe { width: 100%; height: 100%; border: none; display: block; }
+        #loading {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #fff; display: flex; justify-content: center; align-items: center;
+            font-family: sans-serif; color: #666; z-index: 99;
         }
     </style>
 </head>
 <body>
-    <iframe id="mainFrame" src=""></iframe>
+    
+    <div id="loading">Đang kết nối đến máy chủ...</div>
+
+    <iframe id="mainFrame"></iframe>
 
     <script>
-        // 1. Dán Link Google App của bạn vào đây (Link đuôi /exec)
-        var GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyqYd5wIpeRrmgpX6MkL53Id3MfKF-Mo-QF6u8qFrO0tvYnfFufS16MBEfQPgTu9IEeRg/exec";
+        // ============================================================
+        // CẤU HÌNH: Dán link Web App của bạn vào dòng dưới đây
+        // ============================================================
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx...XXX.../exec"; 
+        // (Thay cái link trên bằng link bạn copy ở Bước 1)
+        // ============================================================
 
-        // 2. Logic tự động nối đuôi tham số
-        // Lấy tham số từ thanh địa chỉ Vercel (ví dụ: ?page=hocsinh)
-        var params = window.location.search; 
-        
-        // Gán vào iframe
-        document.getElementById("mainFrame").src = GOOGLE_SCRIPT_URL + params;
+        function loadApp() {
+            // 1. Lấy tham số 'page' từ thanh địa chỉ Vercel
+            // Ví dụ: lms-co-nhi.vercel.app/?page=hocsinh
+            const urlParams = new URLSearchParams(window.location.search);
+            const page = urlParams.get('page') || 'home'; // Mặc định vào trang chủ nếu không có page
+
+            // 2. Tạo link mới để nhúng vào iframe
+            // Nó sẽ thành: .../exec?page=hocsinh
+            const finalSrc = GOOGLE_SCRIPT_URL + "?page=" + page;
+
+            // 3. Gán link vào iframe
+            const iframe = document.getElementById('mainFrame');
+            iframe.src = finalSrc;
+
+            // 4. Khi iframe tải xong thì tắt màn hình chờ
+            iframe.onload = function() {
+                document.getElementById('loading').style.display = 'none';
+            };
+        }
+
+        loadApp();
     </script>
 </body>
 </html>

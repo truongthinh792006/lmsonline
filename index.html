@@ -5,54 +5,99 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hệ Thống Thi Trắc Nghiệm</title>
     <style>
-        /* Làm iframe tràn màn hình, không hiện thanh cuộn thừa */
-        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #f0f2f5; }
-        iframe { width: 100%; height: 100%; border: none; display: block; }
-        #loading {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #fff; display: flex; justify-content: center; align-items: center;
-            font-family: sans-serif; color: #666; z-index: 99;
+        /* Reset CSS để iframe tràn màn hình */
+        body, html { 
+            margin: 0; 
+            padding: 0; 
+            height: 100%; 
+            width: 100%; 
+            overflow: hidden; /* Ẩn thanh cuộn của trình duyệt Vercel */
+            background-color: #f0f2f5;
         }
+
+        /* Iframe chiếm trọn màn hình */
+        iframe { 
+            width: 100%; 
+            height: 100%; 
+            border: none; 
+            display: block; 
+        }
+
+        /* Màn hình chờ khi đang tải iframe */
+        #loading {
+            position: fixed;
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            font-family: sans-serif;
+            color: #555;
+            transition: opacity 0.5s ease;
+        }
+        
+        /* Hiệu ứng xoay tròn */
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 10px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
-    
-    <div id="loading">Đang kết nối đến máy chủ...</div>
 
-    <iframe id="mainFrame"></iframe>
+    <div id="loading">
+        <div class="spinner"></div>
+        <div>Đang kết nối đến hệ thống...</div>
+    </div>
+
+    <iframe id="appFrame"></iframe>
 
     <script>
         // ============================================================
-        // CẤU HÌNH: Dán link Web App của bạn vào dòng dưới đây
+        // ⚠️ CẤU HÌNH: Dán Link Web App (đuôi /exec) của bạn vào đây
         // ============================================================
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwfDgaROG-2x-amjo0pqD3TOE4cqbuE9-Pv4yuz3NGn9YBpSbyXXZv0ACuPgAhRnx0AsA/exec"; 
-        // (Thay cái link trên bằng link bạn copy ở Bước 1)
+        const GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx...XXX.../exec"; 
         // ============================================================
 
-        function loadApp() {
-            // 1. Lấy tham số 'page' từ thanh địa chỉ Vercel
-            // Ví dụ: lms-co-nhi.vercel.app/?page=hocsinh
-            const urlParams = new URLSearchParams(window.location.search);
-            const page = urlParams.get('page') || 'home'; // Mặc định vào trang chủ nếu không có page
+        function initApp() {
+            // Lấy tham số 'page' từ thanh địa chỉ Vercel (ví dụ: ?page=giaovien)
+            const params = new URLSearchParams(window.location.search);
+            const page = params.get('page');
 
-            // 2. Tạo link mới để nhúng vào iframe
-            // Nó sẽ thành: .../exec?page=hocsinh
-            const finalSrc = GOOGLE_SCRIPT_URL + "?page=" + page;
+            // Tạo link đích
+            let finalSrc = GOOGLE_APPS_SCRIPT_URL;
+            
+            // Nếu có page thì nối thêm vào
+            if (page) {
+                finalSrc += (finalSrc.includes('?') ? '&' : '?') + "page=" + page;
+            }
 
-            // 3. Gán link vào iframe
-            const iframe = document.getElementById('mainFrame');
+            // Gán vào iframe
+            const iframe = document.getElementById('appFrame');
             iframe.src = finalSrc;
 
-            // 4. Khi iframe tải xong thì tắt màn hình chờ
+            // Khi iframe tải xong thì ẩn màn hình chờ
             iframe.onload = function() {
-                document.getElementById('loading').style.display = 'none';
+                const loadingDiv = document.getElementById('loading');
+                loadingDiv.style.opacity = '0';
+                setTimeout(() => { loadingDiv.style.display = 'none'; }, 500);
             };
         }
 
-        loadApp();
+        // Chạy hàm khởi tạo
+        initApp();
     </script>
+
 </body>
 </html>
-
-
-
